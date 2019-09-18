@@ -74,16 +74,7 @@ impl ValueStore for Object {
                 }
             }
 
-            let requested = path
-                .get(0)
-                .expect("`Path` guarantees at least one element")
-                .to_str()
-                .into_owned();
-            let available = itertools::join(self.keys(), ", ");
-            return Error::with_msg("Unknown variable")
-                .context("requested variable", requested)
-                .context("available variables", available)
-                .into_err();
+            return Ok(&Value::Nil);
         }
     }
 }

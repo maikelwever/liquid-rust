@@ -93,19 +93,10 @@ impl<'g> Stack<'g> {
 
     /// Recursively index into the stack.
     pub fn get(&self, path: PathRef<'_, '_>) -> Result<&Value> {
-        let frame = self.find_path_frame(path).ok_or_else(|| {
-            let key = path
-                .iter()
-                .next()
-                .cloned()
-                .unwrap_or_else(|| Scalar::new("nil"));
-            let globals = itertools::join(self.globals().iter(), ", ");
-            Error::with_msg("Unknown variable")
-                .context("requested variable", key.to_str().into_owned())
-                .context("available variables", globals)
-        })?;
-
-        frame.get_variable(path)
+        match self.find_path_frame(path) {
+            Some(value) => value.get_variable(path),
+            None => Ok(&Value::Nil)
+        }
     }
 
     fn globals(&self) -> Vec<&str> {
